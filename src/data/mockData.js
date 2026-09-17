@@ -720,7 +720,7 @@ export const INITIAL_ORDERS = [
     paymentMethod: "Credit Card (HDFC Diners)",
     paymentStatus: "Paid",
     orderStatus: "Confirmed",
-    deliveryMethod: "Ansari Coastal Transport",
+    deliveryMethod: "Anzari Coastal Transport",
     notes: "Delivery via water-front access road.",
     timeline: [
       { status: "Order Placed", date: "09 Sep 2026, 16:40", completed: true },

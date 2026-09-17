@@ -85,26 +85,24 @@ export default function ReviewsPage({ reviews }) {
             tab === 'All'
               ? reviewList.length
               : reviewList.filter(
-                  (r) => r.status.toLowerCase() === tab.toLowerCase()
-                ).length;
+                (r) => r.status.toLowerCase() === tab.toLowerCase()
+              ).length;
 
           return (
             <button
               key={tab}
               onClick={() => setFilter(tab)}
-              className={`px-3.5 py-1.5 rounded-sm font-medium transition-all flex items-center gap-1.5 ${
-                filter === tab
+              className={`px-3.5 py-1.5 rounded-sm font-medium transition-all flex items-center gap-1.5 ${filter === tab
                   ? 'bg-[#171715] text-[#FAF8F5] shadow-xs'
                   : 'text-[#6F685E] hover:text-[#171715] hover:bg-[#EFECE6]'
-              }`}
+                }`}
             >
               <span>{tab}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                  filter === tab
+                className={`text-[10px] px-1.5 py-0.2 rounded-full ${filter === tab
                     ? 'bg-[#383532] text-[#EDE7DE]'
                     : 'bg-[#EAE5DC] text-[#6F685E]'
-                }`}
+                  }`}
               >
                 {count}
               </span>
@@ -175,7 +173,7 @@ export default function ReviewsPage({ reviews }) {
                 <div className="p-3 bg-[#FAF8F5] rounded-md border border-[#E8E2D9] text-xs space-y-1">
                   <div className="flex items-center gap-1.5 text-[#8C7355] font-semibold text-[11px] uppercase tracking-wider">
                     <CornerDownRight size={13} />
-                    <span>Ansari Atelier Response</span>
+                    <span>Anzari Atelier Response</span>
                   </div>
                   <p className="text-[#6F685E] pl-4">{review.reply}</p>
                 </div>
@@ -204,11 +202,10 @@ export default function ReviewsPage({ reviews }) {
 
                   <button
                     onClick={() => handleFeatureReview(review.id)}
-                    className={`px-3 py-1 rounded text-xs font-medium border transition-colors flex items-center gap-1 ${
-                      review.featured
+                    className={`px-3 py-1 rounded text-xs font-medium border transition-colors flex items-center gap-1 ${review.featured
                         ? 'bg-[#F7F2E7] text-[#7A5B2E] border-[#E4D5B7]'
                         : 'bg-[#FAF8F5] text-[#6F685E] border-[#DDD5C7] hover:bg-[#EDE8E0]'
-                    }`}
+                      }`}
                   >
                     <Sparkles size={12} />
                     <span>{review.featured ? 'Featured' : 'Feature'}</span>

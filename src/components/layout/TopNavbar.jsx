@@ -122,14 +122,14 @@ export default function TopNavbar({
           <div className="relative">
             <img
               src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-              alt="Azjad Ansari"
+              alt="Asjad Ansari"
               className="w-8 h-8 rounded-full object-cover border border-[#DDD5C7]"
             />
             <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-600 rounded-full ring-1 ring-white" />
           </div>
           <div className="hidden xl:block text-left">
             <span className="text-xs font-semibold text-[#171715] block leading-tight">
-              Azjad Ansari
+              Asjad Ansari
             </span>
             <span className="text-[10px] text-[#8C7355] font-medium tracking-wide">
               Principal Studio

@@ -245,7 +245,7 @@ export default function LoginPage({ onLogin }) {
           <p className="text-center text-xs text-[#8C8275] mt-8 leading-relaxed">
             This is a secure administration panel for{' '}
             <span className="font-semibold text-[#4F4B45]">Anzari Furnitures</span>.<br />
-            Authorized personnel only.
+            Authorized personel only.
           </p>
         </div>
       </div>

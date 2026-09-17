@@ -30,21 +30,14 @@ export default function MobileHeader() {
         {/* Brand */}
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-[#22563F] flex items-center justify-center text-white">
-            <Armchair className="w-4 h-4" />
+            <img src="https://res.cloudinary.com/zqgmlaym/image/upload/v1789666032/ChatGPT_Image_Sep_14_2026_07_40_37_PM.png" alt="ANZARI" className="w-4 h-4" />
           </div>
           <span className="font-serif font-bold text-lg tracking-wide text-[#FAF7F2]">
             ANZARI
           </span>
         </div>
 
-        {/* Quick Add Product Button */}
-        <button
-          onClick={handleOpenAdd}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white text-[#123324] font-bold text-xs shadow hover:bg-[#FAF7F2] active:scale-95 transition-all touch-target-lg"
-        >
-          <Plus className="w-4 h-4 text-[#123324]" />
-          <span>Add Product</span>
-        </button>
+
       </div>
     </header>
   );

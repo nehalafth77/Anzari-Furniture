@@ -38,7 +38,7 @@ export default function Sidebar() {
         {/* Brand Header */}
         <div className="flex items-center gap-3 pb-6 border-b border-white/10">
           <div className="w-10 h-10 rounded-xl bg-[#22563F] flex items-center justify-center text-white shadow-inner">
-            <Armchair className="w-6 h-6 stroke-[1.75]" />
+            <img src="https://res.cloudinary.com/zqgmlaym/image/upload/v1789666032/ChatGPT_Image_Sep_14_2026_07_40_37_PM.png" alt="ANZARI" className="w-6 h-6 stroke-[1.75]" />
           </div>
           <div>
             <h1 className="font-serif text-xl font-bold tracking-wide text-[#FAF7F2]">
@@ -106,7 +106,7 @@ export default function Sidebar() {
           </span>
         </div>
         <p className="text-[11px] text-white/50 mt-3">
-          Furniture Admin v1.0 • INR (₹)
+          Furniture Admin v1.0 •
         </p>
       </div>
     </aside>

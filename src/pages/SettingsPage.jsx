@@ -18,7 +18,7 @@ export default function SettingsPage() {
   const { stats, refreshStats, refreshCategories, showToast } = useApp();
 
   const [storeInfo, setStoreInfo] = useState({
-    name: 'Ansari Living & Furniture Studio',
+    name: 'Anzari Living & Furniture Studio',
     phone: '+91 98765 43210',
     email: 'admin@ansarifurniture.com',
     address: '14 MG Road, Indiranagar, Bengaluru, Karnataka 560038',

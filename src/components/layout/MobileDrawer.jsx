@@ -59,7 +59,7 @@ export default function MobileDrawer() {
           <div className="flex items-center justify-between pb-6 border-b border-white/10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#22563F] flex items-center justify-center text-white">
-                <Armchair className="w-6 h-6" />
+                <img src="https://res.cloudinary.com/zqgmlaym/image/upload/v1789666032/ChatGPT_Image_Sep_14_2026_07_40_37_PM.png" alt="ANZARI" className="w-6 h-6 stroke-[1.75]" />
               </div>
               <div>
                 <h2 className="font-serif text-xl font-bold tracking-wide text-white">
@@ -96,8 +96,8 @@ export default function MobileDrawer() {
                   key={item.id}
                   onClick={() => handleSelectTab(item.id)}
                   className={`w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all touch-target-lg ${isActive
-                      ? 'bg-[#22563F] text-white font-bold border border-white/20 shadow-md'
-                      : 'bg-white/5 hover:bg-white/10 text-white/90'
+                    ? 'bg-[#22563F] text-white font-bold border border-white/20 shadow-md'
+                    : 'bg-white/5 hover:bg-white/10 text-white/90'
                     }`}
                 >
                   <div
