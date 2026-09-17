@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  --color-forest-darkest: #0B2116;
+  --color-forest-dark: #123324;
+  --color-forest: #18412F;
+  --color-forest-hover: #22563F;
+  --color-forest-subtle: #EDF5F0;
+  
+  --color-cream-bg: #F9F7F2;
+  --color-cream-card: #FFFFFF;
+  --color-cream-border: #EAE4D9;
+  --color-cream-muted: #8C8275;
+
+  --color-charcoal: #191816;
+  --color-charcoal-muted: #4F4B45;
+
+  --color-amber-accent: #B88349;
+  --color-amber-subtle: #FDF7EF;
+}
+
+/* Custom smooth scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F9F7F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D1C5;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #18412F;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: #F9F7F2;
+  color: #191816;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Accessible focus ring */
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #18412F;
+  outline-offset: 2px;
+}
+
+/* Touch-friendly touch targets */
+.touch-target-lg {
+  min-height: 48px;
+}
