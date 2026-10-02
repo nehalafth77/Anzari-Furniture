@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Menu,
   Search,
-  Bell,
   ExternalLink,
   ChevronRight,
   SlidersHorizontal,
@@ -12,8 +11,6 @@ import {
 export default function TopNavbar({
   activeTab,
   onToggleSidebar,
-  unreadNotifsCount,
-  onOpenNotifications,
   onOpenStorePreview,
   searchQuery,
   setSearchQuery
@@ -67,7 +64,7 @@ export default function TopNavbar({
 
         <div className="flex items-center gap-2 text-xs text-[#6F685E]">
           <span className="font-serif-luxury text-sm font-medium tracking-wide text-[#8C7355] hidden sm:inline">
-            Anzari Furniture
+            Anzari Furnitures
           </span>
           <ChevronRight size={13} className="text-[#A89F93] hidden sm:inline" />
           <h1 className="text-sm font-semibold text-[#171715] tracking-tight">
@@ -91,29 +88,19 @@ export default function TopNavbar({
         </span>
       </div>
 
-      {/* Right: Actions, Notifications, Storefront Preview & Avatar */}
+      {/* Right: Actions, Storefront Preview & Avatar */}
       <div className="flex items-center gap-3">
         {/* Live Storefront Preview Button */}
-        <button
-          onClick={onOpenStorePreview}
-          className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-[#171715] bg-[#EDE7DE] hover:bg-[#E4DCCE] border border-[#DDD5C7] rounded-md transition-all shadow-xs"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-          <span>Store Preview</span>
-          <ExternalLink size={12} className="text-[#6F685E]" />
-        </button>
-
-        {/* Notifications Button */}
-        <button
-          onClick={onOpenNotifications}
-          className="relative p-2 text-[#524C44] hover:text-[#171715] hover:bg-[#EDE8E0] rounded-md transition-colors"
-          aria-label="Notifications"
-        >
-          <Bell size={18} />
-          {unreadNotifsCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#A85D36] rounded-full ring-2 ring-[#FAF8F5]" />
-          )}
-        </button>
+        {onOpenStorePreview && (
+          <button
+            onClick={onOpenStorePreview}
+            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-[#171715] bg-[#EDE7DE] hover:bg-[#E4DCCE] border border-[#DDD5C7] rounded-md transition-all shadow-xs"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            <span>Store Preview</span>
+            <ExternalLink size={12} className="text-[#6F685E]" />
+          </button>
+        )}
 
         <div className="h-5 w-[1px] bg-[#E8E2D9] mx-1" />
 

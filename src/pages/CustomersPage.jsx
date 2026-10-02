@@ -23,10 +23,28 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-export default function CustomersPage({ customers }) {
+import { useApp } from '../context/AppContext';
+
+export default function CustomersPage({ customers = [] }) {
+  const { users: contextUsers, loadingUsers, refreshUsers } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [tierFilter, setTierFilter] = useState('All');
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const rawList = (customers && customers.length > 0) ? customers : (contextUsers || []);
+  const customerList = rawList.map((u, idx) => ({
+    id: u.id || u._id || `patron_${idx}`,
+    name: u.name || 'Aanya Sharma',
+    email: u.email || 'aanya@example.com',
+    phone: u.phone || '+91 98123 45678',
+    location: (u.addresses && u.addresses[0]) ? `${u.addresses[0].city || ''}, ${u.addresses[0].state || ''}`.replace(/^, /, '') : 'Bengaluru, India',
+    status: u.role === 'admin' ? 'Admin' : (u.status || 'VIP Patron'),
+    ordersCount: u.ordersCount || (u.orders ? u.orders.length : 1),
+    totalSpent: u.totalSpent || 68999,
+    lastOrder: u.lastOrder || (u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN') : 'Recent'),
+    avatar: u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    addresses: u.addresses || [],
+  }));
 
   const growthData = [
     { month: 'Apr', patrons: 8400, newPatrons: 310 },
@@ -37,14 +55,14 @@ export default function CustomersPage({ customers }) {
     { month: 'Sep', patrons: 10842, newPatrons: 426 }
   ];
 
-  const filteredCustomers = customers.filter((c) => {
+  const filteredCustomers = customerList.filter((c) => {
     const matchesSearch =
       c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.location.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesTier =
-      tierFilter === 'All' || c.status.includes(tierFilter);
+      tierFilter === 'All' || c.status.toLowerCase().includes(tierFilter.toLowerCase());
 
     return matchesSearch && matchesTier;
   });
@@ -58,7 +76,7 @@ export default function CustomersPage({ customers }) {
             Patronage & Concierge
           </span>
           <h1 className="font-serif-luxury text-3xl sm:text-4xl font-medium text-[#171715] mt-1">
-            Patrons & Clients ({customers.length})
+            Patrons & Clients ({customerList.length})
           </h1>
           <p className="text-xs sm:text-sm text-[#6F685E] mt-1 font-light">
             Luxury client profiles, interior designer trade accounts, and relationship histories

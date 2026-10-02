@@ -7,12 +7,19 @@ import MobileDrawer from './components/layout/MobileDrawer';
 import Toast from './components/common/Toast';
 import ProductModal from './components/products/ProductModal';
 import ProductDetailModal from './components/products/ProductDetailModal';
+import OrderDetailsModal from './components/orders/OrderDetailsModal';
+import InvoiceModal from './components/orders/InvoiceModal';
 import ConfirmModal from './components/common/ConfirmModal';
 
 // Pages
 import DashboardHome from './pages/DashboardHome';
 import ProductsPage from './pages/ProductsPage';
+import OrdersPage from './pages/OrdersPage';
+import CustomersPage from './pages/CustomersPage';
 import CategoriesPage from './pages/CategoriesPage';
+import CollectionsPage from './pages/CollectionsPage';
+import InventoryPage from './pages/InventoryPage';
+import ReviewsPage from './pages/ReviewsPage';
 import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 import { apiService } from './api/apiService';
@@ -26,10 +33,15 @@ function MainLayout() {
     setEditingProduct,
     viewingProduct,
     setViewingProduct,
+    viewingOrder,
+    setViewingOrder,
+    invoiceOrder,
+    setInvoiceOrder,
     categories,
     showToast,
     refreshStats,
     refreshCategories,
+    refreshOrders,
   } = useApp();
 
   const [isSavingProduct, setIsSavingProduct] = useState(false);
@@ -41,12 +53,12 @@ function MainLayout() {
     try {
       if (id) {
         const res = await apiService.updateProduct(id, productData);
-        if (res.success) {
-          showToast('Product updated successfully!', 'success');
+        if (res.success || res.id) {
+          showToast('Product updated successfully in PostgreSQL backend!', 'success');
         }
       } else {
         const res = await apiService.createProduct(productData);
-        if (res.success) {
+        if (res.success || res.id) {
           showToast('New furniture product added to catalog!', 'success');
         }
       }
@@ -55,7 +67,7 @@ function MainLayout() {
       refreshStats();
       refreshCategories();
 
-      // Trigger a soft refresh by toggling activeTab briefly or firing event if needed
+      // Trigger a soft refresh across catalog components
       window.dispatchEvent(new Event('catalogUpdated'));
     } catch (err) {
       showToast(err.message || 'Failed to save product', 'error');
@@ -68,8 +80,8 @@ function MainLayout() {
   const handleConfirmDeleteFromDetail = async () => {
     if (!productToDeleteFromDetail) return;
     try {
-      const res = await apiService.deleteProduct(productToDeleteFromDetail._id);
-      if (res.success) {
+      const res = await apiService.deleteProduct(productToDeleteFromDetail._id || productToDeleteFromDetail.id);
+      if (res.success || res.message) {
         showToast(`"${productToDeleteFromDetail.name}" deleted successfully!`, 'success');
         setViewingProduct(null);
         refreshStats();
@@ -80,6 +92,18 @@ function MainLayout() {
       showToast(err.message || 'Failed to delete product', 'error');
     } finally {
       setProductToDeleteFromDetail(null);
+    }
+  };
+
+  // Update order status handler
+  const handleUpdateOrderStatus = async (orderId, status, trackingCode) => {
+    try {
+      await apiService.updateOrderStatus(orderId, status, trackingCode);
+      showToast(`Order status updated to ${status}`, 'success');
+      refreshOrders();
+      refreshStats();
+    } catch (err) {
+      showToast(err.message || 'Failed to update order status', 'error');
     }
   };
 
@@ -101,7 +125,18 @@ function MainLayout() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           {activeTab === 'dashboard' && <DashboardHome />}
           {activeTab === 'products' && <ProductsPage />}
+          {activeTab === 'orders' && (
+            <OrdersPage
+              onViewOrder={(ord) => setViewingOrder(ord)}
+              onOpenInvoice={(ord) => setInvoiceOrder(ord)}
+              onUpdateOrderStatus={handleUpdateOrderStatus}
+            />
+          )}
+          {activeTab === 'customers' && <CustomersPage />}
           {activeTab === 'categories' && <CategoriesPage />}
+          {activeTab === 'collections' && <CollectionsPage />}
+          {activeTab === 'inventory' && <InventoryPage />}
+          {activeTab === 'reviews' && <ReviewsPage />}
           {activeTab === 'settings' && <SettingsPage />}
         </main>
       </div>
@@ -131,6 +166,22 @@ function MainLayout() {
         onDelete={(p) => {
           setProductToDeleteFromDetail(p);
         }}
+      />
+
+      {/* Order Details Drawer Modal */}
+      <OrderDetailsModal
+        isOpen={Boolean(viewingOrder)}
+        order={viewingOrder}
+        onClose={() => setViewingOrder(null)}
+        onUpdateOrderStatus={handleUpdateOrderStatus}
+        onOpenInvoice={(ord) => setInvoiceOrder(ord)}
+      />
+
+      {/* Tax Invoice Modal */}
+      <InvoiceModal
+        isOpen={Boolean(invoiceOrder)}
+        order={invoiceOrder}
+        onClose={() => setInvoiceOrder(null)}
       />
 
       <ConfirmModal

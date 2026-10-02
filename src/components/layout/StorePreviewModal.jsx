@@ -198,7 +198,7 @@ export default function StorePreviewModal({ isOpen, onClose, homepageSections, p
                   <div key={col.id} className="group cursor-pointer">
                     <div className="aspect-[4/3] bg-[#EAE5DC] overflow-hidden rounded-sm relative">
                       <img
-                        src={col.image}
+                        src={col.heroImage || col.image || '/images/showroom/hero_showroom.jpg'}
                         alt={col.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
@@ -241,7 +241,7 @@ export default function StorePreviewModal({ isOpen, onClose, homepageSections, p
                   <div key={prod.id} className="group bg-white p-3 border border-[#E8E2D9] rounded-sm">
                     <div className="aspect-square bg-[#F4F0EA] overflow-hidden mb-3 relative">
                       <img
-                        src={prod.image}
+                        src={(Array.isArray(prod.images) && prod.images[0]) || prod.image || '/images/showroom/hero_showroom.jpg'}
                         alt={prod.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />

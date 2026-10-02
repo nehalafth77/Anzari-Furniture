@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Badge from '../components/common/Badge';
 import {
   Star,
@@ -9,18 +9,97 @@ import {
   ShieldAlert,
   Send,
   CornerDownRight,
-  Filter
+  Filter,
+  RotateCw
 } from 'lucide-react';
+import { apiService } from '../api/apiService';
 
-export default function ReviewsPage({ reviews }) {
-  const [reviewList, setReviewList] = useState(reviews);
+const DEFAULT_REVIEWS = [
+  {
+    id: 'rev_1',
+    productId: 'prod_1',
+    product: 'Royal Teak Oval Dining Set',
+    customer: 'Aanya Sharma',
+    userLocation: 'Bengaluru, India',
+    rating: 5,
+    title: 'Stunning centerpiece for our dining room',
+    content: 'The craftsmanship of the fluted pedestal and the solid teak chairs is breathtaking. Delivered in pristine condition.',
+    verified: true,
+    status: 'Approved',
+    featured: true,
+    date: '14 Sep 2026'
+  },
+  {
+    id: 'rev_2',
+    productId: 'prod_2',
+    product: 'Contemporary X-Trestle Glass Dining Suite',
+    customer: 'Rohan Mehra',
+    userLocation: 'Pune, India',
+    rating: 5,
+    title: 'Perfect combination of modern lines and teak wood',
+    content: 'The crisscross X-legs with glass top look so light yet the table is rock solid. Matches our contemporary apartment perfectly.',
+    verified: true,
+    status: 'Approved',
+    featured: true,
+    date: '10 Sep 2026'
+  },
+  {
+    id: 'rev_3',
+    productId: 'prod_3',
+    product: 'Heritage Ring-Arm Solid Teak Bench',
+    customer: 'Kabir Varma',
+    userLocation: 'Mumbai, India',
+    rating: 5,
+    title: 'Authentic Indian woodturning masterpiece',
+    content: 'The circular ring armrests are carved with such perfection. True heirloom furniture quality that will last generations.',
+    verified: true,
+    status: 'Approved',
+    featured: false,
+    date: '02 Sep 2026'
+  }
+];
+
+/** Normalize backend review shape to our internal shape */
+function normalizeReview(r, idx) {
+  return {
+    id: r.id || r._id || `rev_${idx}`,
+    productId: r.productId || r.product?.id || '',
+    product: r.product?.name || r.productName || r.product || 'Unknown Product',
+    customer: r.user?.name || r.userName || r.customer || 'Anonymous',
+    userLocation: r.userLocation || '',
+    rating: r.rating || 5,
+    title: r.title || '',
+    content: r.content || r.comment || '',
+    verified: r.verified ?? r.verifiedBuyer ?? false,
+    status: r.status || 'Pending',
+    featured: r.featured || false,
+    date: r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : (r.date || ''),
+    reply: r.reply || '',
+  };
+}
+
+export default function ReviewsPage() {
+  const [reviewList, setReviewList] = useState(DEFAULT_REVIEWS.map(normalizeReview));
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
 
+  useEffect(() => {
+    apiService.getReviews()
+      .then((res) => {
+        const list = Array.isArray(res) ? res : res.data || res.reviews || [];
+        if (list.length > 0) {
+          setReviewList(list.map(normalizeReview));
+        }
+      })
+      .catch(() => { /* keep DEFAULT_REVIEWS */ })
+      .finally(() => setLoading(false));
+  }, []);
+
   const filteredReviews = reviewList.filter((r) => {
     if (filter === 'All') return true;
-    return r.status.toLowerCase() === filter.toLowerCase();
+    return (r.status || 'Approved').toLowerCase() === filter.toLowerCase();
   });
 
   const handleUpdateStatus = (id, newStatus) => {

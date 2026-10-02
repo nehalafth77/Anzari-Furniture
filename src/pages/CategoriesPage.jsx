@@ -151,7 +151,7 @@ export default function CategoriesPage() {
         ) : categories.length > 0 ? (
           categories.map((category) => (
             <CategoryCard
-              key={category._id}
+              key={category.id || category._id || category.slug}
               category={category}
               onEdit={handleOpenEdit}
               onDelete={handleDeleteClick}

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { X, Eye, Tag, Calendar, Edit3, Trash2, CheckCircle, Sparkles } from 'lucide-react';
-import { StockBadge, FeaturedBadge } from '../common/Badge';
+import React, { useEffect } from 'react';
+import { X, Eye, Tag, Layers, Edit3, Trash2, CheckCircle, Sparkles, MapPin, Wrench } from 'lucide-react';
 import { apiService } from '../../api/apiService';
 import { useApp } from '../../context/AppContext';
+import { getProductPrimaryImage, getProductAllImages } from '../../utils/imageUtils';
 
 export default function ProductDetailModal({
   product,
@@ -12,26 +12,12 @@ export default function ProductDetailModal({
   onDelete,
 }) {
   const { refreshStats } = useApp();
-  const [currentViews, setCurrentViews] = useState(product?.views || 0);
 
   useEffect(() => {
-    if (isOpen && product?._id) {
-      setCurrentViews(product.views || 0);
-      
-      // Increment view count in backend as per requirement #19
-      apiService
-        .incrementViews(product._id)
-        .then((res) => {
-          if (res.success && res.data?.views) {
-            setCurrentViews(res.data.views);
-            refreshStats(); // Update dashboard total views dynamically
-          }
-        })
-        .catch((err) => {
-          console.error('Failed to increment views:', err);
-        });
+    if (isOpen && (product?._id || product?.id)) {
+      apiService.incrementViews(product._id || product.id).catch(() => {});
     }
-  }, [isOpen, product?._id, refreshStats]);
+  }, [isOpen, product]);
 
   if (!isOpen || !product) return null;
 
@@ -41,19 +27,23 @@ export default function ProductDetailModal({
     maximumFractionDigits: 0,
   }).format(product.price);
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return 'N/A';
-    return new Intl.DateTimeFormat('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }).format(new Date(dateStr));
-  };
+  const formattedComparePrice = product.compareAtPrice
+    ? new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+      }).format(product.compareAtPrice)
+    : null;
+
+  const displayImage = getProductPrimaryImage(product);
+  const allImages = getProductAllImages(product);
+
+  const stockCount = product.stock !== undefined ? product.stock : 10;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
       <div
-        className="bg-white rounded-3xl max-w-2xl w-full my-6 shadow-2xl border border-[#EAE4D9] overflow-hidden flex flex-col max-h-[92vh]"
+        className="bg-white rounded-3xl max-w-3xl w-full my-6 shadow-2xl border border-[#EAE4D9] overflow-hidden flex flex-col max-h-[92vh]"
         role="dialog"
         aria-modal="true"
       >
@@ -61,13 +51,13 @@ export default function ProductDetailModal({
         <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[#EAE4D9] bg-[#F9F7F2]">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-[#18412F] uppercase tracking-wider">
-              Furniture Details
+              {product.collectionName || 'Milano Collection'}
             </span>
-            <span className="text-xs text-[#8C8275]">• ID: {product._id?.slice(-6) || 'Item'}</span>
+            <span className="text-xs text-[#8C8275]">• Room: {product.room || 'Living Room'}</span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-[#8C8275] hover:text-[#191816] hover:bg-white transition-colors touch-target-lg flex items-center justify-center"
+            className="p-2 rounded-xl text-[#8C8275] hover:text-[#191816] hover:bg-white transition-colors flex items-center justify-center"
             aria-label="Close details"
           >
             <X className="w-6 h-6" />
@@ -79,7 +69,7 @@ export default function ProductDetailModal({
           {/* Hero Large Image */}
           <div className="relative rounded-2xl overflow-hidden bg-[#F9F7F2] border border-[#EAE4D9]">
             <img
-              src={product.image}
+              src={displayImage}
               alt={product.name}
               className="w-full h-64 sm:h-80 object-cover"
               onError={(e) => {
@@ -90,118 +80,191 @@ export default function ProductDetailModal({
 
             {/* Badges Overlay */}
             <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-              <StockBadge status={product.stockStatus} />
-              {product.featured && <FeaturedBadge />}
-            </div>
-
-            {/* Live View Counter Badge */}
-            <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-black/75 backdrop-blur-md text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg">
-              <Eye className="w-4 h-4 text-emerald-300" />
-              <span>{currentViews} Total Views</span>
+              <div className="flex gap-2">
+                {product.badge && (
+                  <span className="px-3 py-1 rounded-full bg-[#18412F] text-white text-xs font-bold shadow-md uppercase">
+                    {product.badge}
+                  </span>
+                )}
+                {product.bestseller && (
+                  <span className="px-3 py-1 rounded-full bg-[#8C7355] text-white text-xs font-bold shadow-md">
+                    ★ Bestseller
+                  </span>
+                )}
+              </div>
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-bold shadow-md text-white ${
+                  stockCount <= 5 ? 'bg-amber-600' : 'bg-emerald-700'
+                }`}
+              >
+                {stockCount} in stock
+              </span>
             </div>
           </div>
 
-          {/* Title & Price Header */}
+          {/* Title, Category & Pricing */}
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-[#8C8275] uppercase tracking-wider mb-1">
-              <Tag className="w-3.5 h-3.5 text-[#18412F]" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-[#8C7355] uppercase tracking-wider mb-1">
               <span>{product.category}</span>
-              {product.brand && <span>• {product.brand}</span>}
+              <span>•</span>
+              <span>{product.room}</span>
+              <span>•</span>
+              <span>{product.collectionName}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#191816] leading-snug">
+
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-[#191816]">
               {product.name}
-            </h2>
-            <div className="text-2xl sm:text-3xl font-extrabold text-[#18412F] mt-2">
-              {formattedPrice}
+            </h1>
+
+            {product.shortDescription && (
+              <p className="text-sm text-[#8C7355] mt-1 font-medium">
+                {product.shortDescription}
+              </p>
+            )}
+
+            <div className="flex items-baseline gap-3 mt-3">
+              <span className="text-3xl font-extrabold text-[#18412F]">
+                {formattedPrice}
+              </span>
+              {formattedComparePrice && (
+                <span className="text-lg text-[#8C8275] line-through">
+                  {formattedComparePrice}
+                </span>
+              )}
+              {product.rating && (
+                <span className="ml-auto text-sm font-bold text-[#A37B3D] px-2.5 py-1 bg-amber-50 rounded-lg border border-amber-200">
+                  ★ {product.rating} / 5.0 ({product.reviewCount || 0} reviews)
+                </span>
+              )}
             </div>
           </div>
 
           {/* Description */}
-          <div className="bg-[#F9F7F2] p-4 sm:p-5 rounded-2xl border border-[#EAE4D9]">
-            <h4 className="text-xs font-bold text-[#8C8275] uppercase tracking-wider mb-2">
-              Product Overview
+          <div className="bg-[#FAF8F5] p-5 rounded-2xl border border-[#EAE4D9]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#8C7355] mb-2">
+              Editorial Description
             </h4>
-            <p className="text-sm sm:text-base text-[#191816] leading-relaxed">
-              {product.description || 'No description provided for this furniture piece.'}
+            <p className="text-sm text-[#4F4B45] leading-relaxed">
+              {product.description || 'Mastercrafted solid timber furniture built for luxury and durability.'}
             </p>
           </div>
 
           {/* Specifications Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3 bg-[#F9F7F2] rounded-xl border border-[#EAE4D9]">
-              <span className="text-[11px] font-bold text-[#8C8275] uppercase block">Material</span>
-              <span className="text-xs sm:text-sm font-semibold text-[#191816] mt-0.5 block">
-                {product.material || 'Solid Wood'}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-white border border-[#EAE4D9]">
+              <span className="text-xs font-bold text-[#8C8275] uppercase block mb-1">
+                Primary Material
               </span>
+              <p className="text-sm font-semibold text-[#191816]">
+                {product.material || 'Solid Teak Wood'}
+              </p>
             </div>
-            <div className="p-3 bg-[#F9F7F2] rounded-xl border border-[#EAE4D9]">
-              <span className="text-[11px] font-bold text-[#8C8275] uppercase block">Color</span>
-              <span className="text-xs sm:text-sm font-semibold text-[#191816] mt-0.5 block">
-                {product.color || 'Natural'}
-              </span>
-            </div>
-            <div className="p-3 bg-[#F9F7F2] rounded-xl border border-[#EAE4D9]">
-              <span className="text-[11px] font-bold text-[#8C8275] uppercase block">Dimensions</span>
-              <span className="text-xs sm:text-sm font-semibold text-[#191816] mt-0.5 block truncate">
-                {product.dimensions || 'Standard'}
-              </span>
-            </div>
-            <div className="p-3 bg-[#F9F7F2] rounded-xl border border-[#EAE4D9]">
-              <span className="text-[11px] font-bold text-[#8C8275] uppercase block">Status</span>
-              <span className="text-xs sm:text-sm font-semibold text-[#18412F] mt-0.5 block">
-                {product.stockStatus}
-              </span>
-            </div>
-          </div>
 
-          {/* Metadata Dates */}
-          <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-[#8C8275] pt-2 border-t border-[#EAE4D9]">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Added: {formatDate(product.createdAt)}</span>
+            <div className="p-4 rounded-xl bg-white border border-[#EAE4D9]">
+              <span className="text-xs font-bold text-[#8C8275] uppercase block mb-1">
+                Dimensions
+              </span>
+              <p className="text-sm font-semibold text-[#191816]">
+                {product.dimensions
+                  ? `${product.dimensions.width || 0}W x ${product.dimensions.height || 0}H x ${product.dimensions.depth || 0}D ${product.dimensions.unit || 'cm'}`
+                  : 'Custom Dimensions'}
+              </p>
             </div>
-            {product.updatedAt && (
-              <div className="flex items-center gap-1.5">
-                <span>Updated: {formatDate(product.updatedAt)}</span>
+
+            {Array.isArray(product.colors) && product.colors.length > 0 && (
+              <div className="p-4 rounded-xl bg-white border border-[#EAE4D9]">
+                <span className="text-xs font-bold text-[#8C8275] uppercase block mb-1">
+                  Available Colors
+                </span>
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {product.colors.map((color, idx) => (
+                    <span key={idx} className="px-2 py-1 bg-[#F9F7F2] border border-[#EAE4D9] rounded-md text-xs text-[#191816]">
+                      {color}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {product.slug && (
+              <div className="p-4 rounded-xl bg-white border border-[#EAE4D9]">
+                <span className="text-xs font-bold text-[#8C8275] uppercase block mb-1">
+                  URL Slug
+                </span>
+                <p className="text-sm font-semibold text-[#191816] break-all">
+                  {product.slug}
+                </p>
               </div>
             )}
           </div>
+
+          {/* Features Checklist */}
+          {Array.isArray(product.features) && product.features.length > 0 && (
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#8C7355] mb-2.5">
+                Craftsmanship Highlights
+              </h4>
+              <ul className="space-y-2">
+                {product.features.map((feat, idx) => (
+                  <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm text-[#4F4B45]">
+                    <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <span>{feat}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Care instructions */}
+          {product.careInstructions && (
+            <div className="p-4 rounded-xl bg-[#EDF5F0]/60 border border-[#D0E3D9] text-xs text-[#18412F]">
+              <span className="font-bold block mb-1">Care & Maintenance:</span>
+              <span>{product.careInstructions}</span>
+            </div>
+          )}
+
+          {/* Tags */}
+          {Array.isArray(product.tags) && product.tags.length > 0 && (
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#8C7355] mb-2.5">
+                Product Tags
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {product.tags.map((tag, idx) => (
+                  <span key={idx} className="px-2.5 py-1 bg-[#F9F7F2] border border-[#EAE4D9] rounded-lg text-xs text-[#4F4B45]">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Modal Footer / Actions */}
-        <div className="p-4 sm:p-5 border-t border-[#EAE4D9] bg-white flex flex-col sm:flex-row justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-              onDelete(product);
-            }}
-            className="px-5 py-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm border border-red-200 transition-colors flex items-center justify-center gap-2 touch-target-lg"
-          >
-            <Trash2 className="w-4 h-4" />
-            <span>Delete Product</span>
-          </button>
-
-          <div className="flex flex-col sm:flex-row gap-3">
+        <div className="p-4 sm:p-5 border-t border-[#EAE4D9] bg-[#F9F7F2] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
             <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-3 rounded-xl bg-[#F9F7F2] hover:bg-[#EAE4D9] text-[#191816] font-semibold text-sm border border-[#EAE4D9] transition-colors touch-target-lg text-center"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                onEdit(product);
-              }}
-              className="px-6 py-3 rounded-xl bg-[#18412F] hover:bg-[#123324] text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 touch-target-lg active:scale-95"
+              onClick={() => onEdit(product)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#18412F] text-white text-xs sm:text-sm font-bold shadow-xs hover:bg-[#123324] transition-all"
             >
               <Edit3 className="w-4 h-4" />
               <span>Edit Product</span>
             </button>
+            <button
+              onClick={() => onDelete(product)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-xs sm:text-sm font-semibold border border-red-200 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Delete</span>
+            </button>
           </div>
+
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 rounded-xl bg-white border border-[#EAE4D9] text-xs sm:text-sm font-semibold text-[#191816] hover:bg-[#EAE4D9] transition-colors"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>

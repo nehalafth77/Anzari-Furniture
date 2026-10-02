@@ -13,7 +13,7 @@ export default function FilterBar({
   setStockFilter,
   totalResults,
 }) {
-  const defaultCategories = ['All', 'Sofas', 'Chairs', 'Tables', 'Beds', 'Storage', 'Decor', 'Outdoor'];
+  const defaultCategories = ['All', 'Sofas', 'Chairs', 'Tables', 'Beds', 'Storage', 'Decor', 'Outdoor', 'Home Office', 'Office Furniture'];
   
   // Combine unique categories from API and defaults
   const categoryNames = Array.from(

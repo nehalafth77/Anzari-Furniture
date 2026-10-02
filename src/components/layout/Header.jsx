@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Bell, LogOut, Sparkles } from 'lucide-react';
+import { Search, LogOut, Sparkles } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export default function Header() {
@@ -38,14 +38,6 @@ export default function Header() {
             <span>Store Live</span>
           </div>
 
-          <button
-            className="relative p-2.5 rounded-xl border border-[#EAE4D9] hover:bg-[#F9F7F2] text-[#4F4B45] transition-colors"
-            title="Notifications"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-600" />
-          </button>
-
           {/* Admin Profile */}
           <div className="flex items-center gap-3 pl-3 border-l border-[#EAE4D9]">
             <div className="w-10 h-10 rounded-xl bg-[#123324] text-white flex items-center justify-center font-bold text-sm shadow-sm">
@@ -55,7 +47,7 @@ export default function Header() {
               <div className="text-sm font-bold text-[#191816]">
                 {currentUser?.name || 'Store Admin'}
               </div>
-              <div className="text-xs text-[#8C8275]">Anzari Furniture</div>
+              <div className="text-xs text-[#8C8275]">Anzari Furnitures</div>
             </div>
           </div>
 

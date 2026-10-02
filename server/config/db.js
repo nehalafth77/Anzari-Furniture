@@ -1,7 +1,15 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
 import Category from '../models/Category.js';
 import Product from '../models/Product.js';
 import { INITIAL_CATEGORIES, INITIAL_PRODUCTS } from '../data/sampleData.js';
+
+// Configure reliable DNS servers for MongoDB Atlas SRV connection strings (prevents querySrv ECONNREFUSED on Windows/ISPs)
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  // Ignore if not permitted
+}
 
 export let isConnectedToMongo = false;
 
@@ -11,7 +19,7 @@ export const connectDB = async () => {
   try {
     mongoose.set('strictQuery', false);
     const conn = await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 2500, // Quick fallback if local MongoDB is not running
+      serverSelectionTimeoutMS: 15000, // 15 seconds for MongoDB Atlas cloud cluster
     });
     
     isConnectedToMongo = true;

@@ -1,0 +1,20 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/admin/:match*",
+      "destination": "https://xshievklmjrdgyiwfxbk.supabase.co/functions/v1/admin?action=:match*"
+    },
+    {
+      "source": "/api/orders",
+      "destination": "https://xshievklmjrdgyiwfxbk.supabase.co/functions/v1/create-order"
+    },
+    {
+      "source": "/api/reviews",
+      "destination": "https://xshievklmjrdgyiwfxbk.supabase.co/functions/v1/create-review"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

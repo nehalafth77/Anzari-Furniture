@@ -1,0 +1,10 @@
+project_id = "xshievklmjrdgyiwfxbk"
+
+[functions.create-order]
+verify_jwt = false
+
+[functions.create-review]
+verify_jwt = false
+
+[functions.admin]
+verify_jwt = false

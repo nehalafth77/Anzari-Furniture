@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Armchair, Eye, EyeOff, Lock, Mail, AlertCircle, Sparkles, ArrowRight } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -19,32 +20,47 @@ export default function LoginPage({ onLogin }) {
 
     setIsLoading(true);
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password }),
+      // Use Supabase Auth — works on Vercel without Express server
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
       });
-      const data = await res.json();
 
-      if (!res.ok || !data.success) {
-        setError(data.message || 'Login failed. Please check your credentials.');
+      if (authError) {
+        setError(authError.message || 'Login failed. Please check your credentials.');
         return;
       }
 
-      // Store token and user in sessionStorage for this session
-      sessionStorage.setItem('anzari_token', data.token);
-      sessionStorage.setItem('anzari_user', JSON.stringify(data.user));
-      onLogin(data.user);
+      const supabaseUser = data?.user;
+      if (!supabaseUser) {
+        setError('Authentication failed: No user data received.');
+        return;
+      }
+
+      // Build user object compatible with the rest of the admin app
+      const user = {
+        id: supabaseUser.id,
+        name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'Admin',
+        email: supabaseUser.email || email.trim(),
+        role: supabaseUser.user_metadata?.role || supabaseUser.app_metadata?.role || 'admin',
+        phone: supabaseUser.user_metadata?.phone || '',
+      };
+
+      // Store a reference in sessionStorage for UI consistency
+      sessionStorage.setItem('anzari_user', JSON.stringify(user));
+      // Supabase session is managed automatically by the SDK
+      onLogin(user);
     } catch (err) {
-      setError('Cannot reach server. Please make sure the backend is running.');
+      setError('Login error: ' + (err.message || 'Unknown error. Please try again.'));
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDemoLogin = () => {
-    setEmail('admin@anzarifurniture.com');
-    setPassword('admin123');
+    setEmail('admin@ansarifurniture.com');
+    setPassword('MoonLight333999A');
+    setError('');
   };
 
   return (
@@ -239,9 +255,15 @@ export default function LoginPage({ onLogin }) {
             <div className="flex-1 h-px bg-[#EAE4D9]" />
           </div>
 
-
-
-          {/* Hint text */}
+          {/* Quick Fill Admin Button */}
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            className="w-full py-3 px-4 bg-white hover:bg-[#F4EFE6] border border-[#EAE4D9] text-[#18412F] text-sm font-semibold rounded-2xl transition-all shadow-sm flex items-center justify-center gap-2 hover:border-[#18412F]/40"
+          >
+            <Sparkles className="w-4 h-4 text-[#B88349]" />
+            <span>Auto-fill Admin Credentials</span>
+          </button>
           <p className="text-center text-xs text-[#8C8275] mt-8 leading-relaxed">
             This is a secure administration panel for{' '}
             <span className="font-semibold text-[#4F4B45]">Anzari Furnitures</span>.<br />

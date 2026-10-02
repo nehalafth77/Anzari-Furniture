@@ -2,8 +2,63 @@ import React, { useState } from 'react';
 import Badge from '../components/common/Badge';
 import { Plus, Edit2, Eye, Archive, CheckCircle, Sparkles, Layers } from 'lucide-react';
 
-export default function CollectionsPage({ collections, onOpenStorePreview }) {
-  const [collectionList, setCollectionList] = useState(collections);
+const DEFAULT_COLLECTIONS = [
+  {
+    id: 'col_1',
+    name: 'Teak Collection',
+    slug: 'teak-collection',
+    eyebrow: 'TIMELESS HARDWOOD',
+    tagline: 'Centuries of Indian Timber Excellence',
+    description: 'Hand-rubbed Indian teak with natural grain movement, built to last generations.',
+    heroImage: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=800&q=80',
+    itemCount: 28,
+    status: 'Published',
+    featured: true,
+    lastUpdated: 'Recently synced with Supabase'
+  },
+  {
+    id: 'col_2',
+    name: 'Modern Collection',
+    slug: 'modern-collection',
+    eyebrow: 'ARCHITECTURAL LINES',
+    tagline: 'Geometric Craftsmanship Meets Clarity',
+    description: 'Crisp X-trestles, beveled tempered crystal, and minimalist wood joints.',
+    heroImage: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&q=80',
+    itemCount: 19,
+    status: 'Published',
+    featured: true,
+    lastUpdated: 'Recently synced with Supabase'
+  },
+  {
+    id: 'col_3',
+    name: 'Traditional Collection',
+    slug: 'traditional-collection',
+    eyebrow: 'HERITAGE CARVINGS',
+    tagline: 'Authentic Indian Circular Motifs',
+    description: 'Turned baluster legs, circular wheel armrests, and ornamental woodcraft.',
+    heroImage: 'https://images.unsplash.com/photo-1580481077195-c328ad4f3e69?w=800&q=80',
+    itemCount: 16,
+    status: 'Published',
+    featured: false,
+    lastUpdated: 'Recently synced with Supabase'
+  },
+  {
+    id: 'col_4',
+    name: 'Milano Collection',
+    slug: 'milano-collection',
+    eyebrow: 'CONTEMPORARY SUITES',
+    tagline: 'Curated Italian Aesthetics',
+    description: 'Sculptural bouclé upholstery resting on kiln-dried hardwood frames.',
+    heroImage: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
+    itemCount: 14,
+    status: 'Published',
+    featured: true,
+    lastUpdated: 'Recently synced with Supabase'
+  }
+];
+
+export default function CollectionsPage({ collections = DEFAULT_COLLECTIONS, onOpenStorePreview }) {
+  const [collectionList, setCollectionList] = useState(collections && collections.length > 0 ? collections : DEFAULT_COLLECTIONS);
   const [editingCollection, setEditingCollection] = useState(null);
 
   const handleToggleStatus = (id) => {
